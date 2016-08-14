@@ -62,3 +62,7 @@ availableUsers = (checkParse <$> runParse <$> usersRaw)
         checkParse (Left _) = Left "Failed to parse users"
         checkParse (Right r) = Right r
         decimal = read <$> Ps.many1 Ps.digit
+
+
+listAvailableUsers :: IO [User]
+listAvailableUsers = either (const []) id <$> availableUsers
