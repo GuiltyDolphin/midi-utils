@@ -1,4 +1,9 @@
-module Util where
+module Util
+  ( mapElapsedTime
+  , slowTrack
+  , speedTrack
+  ) where
+
 
 import qualified Sound.MIDI.File as F
 import qualified Data.EventList.Relative.TimeBody as T
