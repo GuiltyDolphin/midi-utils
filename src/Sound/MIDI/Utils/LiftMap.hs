@@ -1,7 +1,7 @@
 {-# LANGUAGE FlexibleInstances #-}
 {-# LANGUAGE TypeSynonymInstances #-}
 {-# LANGUAGE MultiParamTypeClasses #-}
-module Util
+module Sound.MIDI.Utils.LiftMap
   ( slowTrack
   , speedTrack
   , liftMap

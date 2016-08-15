@@ -1,4 +1,4 @@
-module Play where
+module Sound.MIDI.Utils.Run where
 
 import qualified Sound.MIDI.File.Save as Save
 import qualified Sound.MIDI.IO as SoundIO
