@@ -18,7 +18,7 @@ import qualified Text.Parsec.Token as Ps
 import Data.Function (on)
 
 
-newtype Port   = Port { getPort :: (Int, Int) }
+newtype Port = Port { getPort :: (Int, Int) }
   deriving (Eq)
 
 
@@ -27,10 +27,9 @@ instance Show Port where
 
 
 data User = User { userPort :: Port
-                    , userClientName :: String
-                    , userPortName :: String
-                    } deriving (Show, Eq)
-
+                 , userClientName :: String
+                 , userPortName :: String
+                 } deriving (Show, Eq)
 
 
 data PlayMidi = PlayMidi { midiPort :: Port, midiFile :: FilePath }
