@@ -10,7 +10,7 @@ license:             GPL-3
 license-file:        LICENSE
 author:              Ben Moon
 maintainer:          guiltydolphin@gmail.com
--- copyright:
+copyright:           (c) 2016 Ben Moon
 category:            Sound
 build-type:          Simple
 extra-source-files:  ChangeLog.md
