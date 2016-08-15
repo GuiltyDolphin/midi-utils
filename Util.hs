@@ -1,9 +1,11 @@
+{-# LANGUAGE MultiParamTypeClasses #-}
 module Util
   ( mapElapsedTime
   , slowTrack
   , speedTrack
   , mapTrackVoice
   , mapPitch
+  , liftMap
   ) where
 
 
@@ -56,3 +58,8 @@ mapMidiEvent _ e = e
 
 mapTrackVoice :: (Voice -> Voice) -> F.Track -> F.Track
 mapTrackVoice = mapEvent . E.mapVoice
+
+
+-- | Instances of @LiftMap a b@ can lift maps from @a -> a@ to @b -> b@.
+class LiftMap a b where
+  liftMap :: (a -> a) -> b -> b
