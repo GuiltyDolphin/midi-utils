@@ -4,7 +4,7 @@
 name:                midi-utils
 version:             0.1.0.0
 synopsis:            Utilities for working with MIDI data
--- description:
+description:         Utilities for working with MIDI data
 homepage:            https://github.com/GuiltyDolphin/midi-utils
 license:             GPL-3
 license-file:        LICENSE
