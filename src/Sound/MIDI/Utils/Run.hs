@@ -2,6 +2,7 @@ module Sound.MIDI.Utils.Run
   ( playMidi
   , listAvailableUsers
   , User(userPort, userClientName, userPortName)
+  , Port, mkPort
   ) where
 
 
@@ -20,6 +21,10 @@ import Data.Function (on)
 
 newtype Port = Port { getPort :: (Int, Int) }
   deriving (Eq)
+
+
+mkPort :: (Int, Int) -> Port
+mkPort = Port
 
 
 instance Show Port where
