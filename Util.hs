@@ -1,9 +1,9 @@
+{-# LANGUAGE FlexibleInstances #-}
+{-# LANGUAGE TypeSynonymInstances #-}
 {-# LANGUAGE MultiParamTypeClasses #-}
 module Util
-  ( mapElapsedTime
-  , slowTrack
+  ( slowTrack
   , speedTrack
-  , mapTrackVoice
   , mapPitch
   , liftMap
   ) where
@@ -22,16 +22,16 @@ type MEvent = E.T
 type MessageChan = C.T
 
 
-mapElapsedTime :: (Integer -> Integer) -> MIDI -> MIDI
-mapElapsedTime f = F.mapTrack (T.mapTime (F.toElapsedTime . f . F.fromElapsedTime))
+mapElapsedTimeIntegral :: (Integer -> Integer) -> MIDI -> MIDI
+mapElapsedTimeIntegral f = liftMap $ F.toElapsedTime . f . F.fromElapsedTime
 
 
 slowTrack :: Integer -> MIDI -> MIDI
-slowTrack n = mapElapsedTime (*n)
+slowTrack n = mapElapsedTimeIntegral (*n)
 
 
 speedTrack :: Integer -> MIDI -> MIDI
-speedTrack n = mapElapsedTime (`div`n)
+speedTrack n = mapElapsedTimeIntegral (`div`n)
 
 
 mapPitch :: (V.Pitch -> V.Pitch) -> Voice -> Voice
@@ -47,19 +47,69 @@ mapVelocity f (V.NoteOn  p v) = V.NoteOn  p (f v)
 mapVelocity _ v = v
 
 
-mapEvent :: (MEvent -> MEvent) -> F.Track -> F.Track
-mapEvent = T.mapBody
-
-
-mapMidiEvent :: (MessageChan -> MessageChan) -> MEvent -> MEvent
-mapMidiEvent f (E.MIDIEvent e) = E.MIDIEvent (f e)
-mapMidiEvent _ e = e
-
-
-mapTrackVoice :: (Voice -> Voice) -> F.Track -> F.Track
-mapTrackVoice = mapEvent . E.mapVoice
-
-
 -- | Instances of @LiftMap a b@ can lift maps from @a -> a@ to @b -> b@.
 class LiftMap a b where
   liftMap :: (a -> a) -> b -> b
+
+
+-- ElapsedTime
+instance LiftMap F.ElapsedTime F.Track where
+  liftMap = T.mapTime
+
+
+instance LiftMap F.ElapsedTime MIDI where
+  liftMap f = liftMap (liftMap f :: F.Track -> F.Track)
+
+
+-- MessageChan
+instance LiftMap MessageChan MEvent where
+  liftMap f (E.MIDIEvent e) = E.MIDIEvent (f e)
+  liftMap _ e = e
+
+
+instance LiftMap MessageChan F.Track where
+  liftMap f = liftMap (liftMap f :: MEvent -> MEvent)
+
+
+instance LiftMap MessageChan MIDI where
+  liftMap f = liftMap (liftMap f :: F.Track -> F.Track)
+
+
+-- MEvent
+instance LiftMap MEvent F.Track where
+  liftMap = T.mapBody
+
+
+instance LiftMap MEvent MIDI where
+  liftMap f = liftMap (liftMap f :: F.Track -> F.Track)
+
+
+-- Pitch
+instance LiftMap V.Pitch Voice where
+  liftMap = mapPitch
+
+
+instance LiftMap V.Pitch F.Track where
+  liftMap f = liftMap (liftMap f :: Voice -> Voice)
+
+
+instance LiftMap V.Pitch MIDI where
+  liftMap f = liftMap (liftMap f :: F.Track -> F.Track)
+
+
+-- Track
+instance LiftMap F.Track MIDI where
+  liftMap = F.mapTrack
+
+
+-- Voice
+instance LiftMap Voice MEvent where
+  liftMap = E.mapVoice
+
+
+instance LiftMap Voice F.Track where
+  liftMap f = liftMap (liftMap f :: MEvent -> MEvent)
+
+
+instance LiftMap Voice MIDI where
+  liftMap f = liftMap (liftMap f :: F.Track -> F.Track)
