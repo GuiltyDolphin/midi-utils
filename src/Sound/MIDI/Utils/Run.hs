@@ -1,11 +1,13 @@
 module Sound.MIDI.Utils.Run
   ( playMidi
+  , playMidiFile
   , listAvailableUsers
   , User(userPort, userClientName, userPortName)
   , Port, mkPort
   ) where
 
 
+import Control.Monad ((>=>))
 import Data.Function (on)
 import System.Process
 import qualified System.IO as SIO
@@ -54,6 +56,10 @@ playMidi p m = do
   pure ()
   where midiBS = BS.pack $ Save.toByteList m
         midiProc f = toProcess (PlayMidi p f)
+
+
+playMidiFile :: Port -> FilePath -> IO ()
+playMidiFile p = Load.fromFile >=> playMidi p
 
 
 availableUsers :: IO (Either String [User])
