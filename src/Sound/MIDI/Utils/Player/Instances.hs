@@ -13,7 +13,9 @@ import qualified Data.ByteString as BS
 
 import qualified Sound.MIDI.File.Save as Save
 
-import Sound.MIDI.Utils.Player (Player(..))
+import Sound.MIDI.Utils.Player ( Player(..)
+                               , PlayerStream(..)
+                               , PlayerFile(..))
 
 
 type Port = (Int, Int)
@@ -27,7 +29,6 @@ instance Show ALSAPort where
 
 
 data PlayerTemplate port = PT { playerPort :: port
-                              , playerFile :: FilePath
                               , playerName :: String
                               }
 
@@ -39,17 +40,31 @@ newtype PMidi = PMidi { getPMidi :: PlayerTemplate ALSAPort }
 
 
 instance Player APlayMidi ALSAPort where
-  makePlayer p = APlayMidi (PT { playerPort = p, playerFile = "-", playerName = "aplaymidi" })
-  playMidi (APlayMidi p) = defaultAlsaPlayMidi p
+  makePlayer p = APlayMidi (PT { playerPort = p, playerName = "aplaymidi" })
 
 
 instance Player PMidi ALSAPort where
-  makePlayer p = PMidi (PT { playerPort = p, playerFile = "-", playerName = "pmidi" })
+  makePlayer p = PMidi (PT { playerPort = p, playerName = "pmidi" })
+
+
+instance PlayerStream APlayMidi where
+  playMidi (APlayMidi p) = defaultAlsaPlayMidi p
+
+
+instance PlayerStream PMidi where
   playMidi (PMidi p) = defaultAlsaPlayMidi p
 
 
-toProcess :: (Show p) => PlayerTemplate p -> CreateProcess
-toProcess (PT { playerPort = p, playerFile = f, playerName = n }) = shell $ concat [n, " -p ", show p, " ", f]
+instance PlayerFile APlayMidi where
+  playMidiFile (APlayMidi p) = defaultAlsaPlayMidiFile p
+
+
+instance PlayerFile PMidi where
+  playMidiFile (PMidi p) = defaultAlsaPlayMidiFile p
+
+
+toProcess :: (Show p) => PlayerTemplate p -> FilePath -> CreateProcess
+toProcess (PT { playerPort = p, playerName = n }) f = shell $ concat [n, " -p ", show p, " ", f]
 
 
 defaultAlsaPlayMidi p m = do
@@ -59,4 +74,7 @@ defaultAlsaPlayMidi p m = do
   createProcess (midiProc { std_in=UseHandle b1 })
   pure ()
   where midiBS = BS.pack $ Save.toByteList m
-        midiProc = toProcess p
+        midiProc = toProcess p "-"
+
+
+defaultAlsaPlayMidiFile p f = createProcess (toProcess p f) >> pure ()
