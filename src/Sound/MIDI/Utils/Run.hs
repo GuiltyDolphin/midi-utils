@@ -1,4 +1,9 @@
-module Sound.MIDI.Utils.Run where
+module Sound.MIDI.Utils.Run
+  ( runMidi
+  , listAvailableUsers
+  , User(userPort, userClientName, userPortName)
+  ) where
+
 
 import qualified Sound.MIDI.File.Save as Save
 import Sound.MIDI.File (T)
