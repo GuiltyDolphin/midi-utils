@@ -15,6 +15,9 @@ category:            Sound
 build-type:          Simple
 extra-source-files:  ChangeLog.md
 cabal-version:       >=1.10
+data-files:
+    -- sample MIDI
+    data/samples/sample1.midi
 
 library
   exposed-modules:     Sound.MIDI.Utils.LiftMap
