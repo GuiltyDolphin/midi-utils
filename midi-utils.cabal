@@ -18,6 +18,9 @@ cabal-version:       >=1.10
 data-files:
     -- sample MIDI
     data/samples/sample1.midi
+source-repository head
+  type: git
+  location: git://github.com/guiltydolphin/midi-utils.git
 
 library
   exposed-modules:     Sound.MIDI.Utils.LiftMap
