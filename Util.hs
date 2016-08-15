@@ -4,7 +4,6 @@
 module Util
   ( slowTrack
   , speedTrack
-  , mapPitch
   , liftMap
   ) where
 
