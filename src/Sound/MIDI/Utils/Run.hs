@@ -1,11 +1,10 @@
 module Sound.MIDI.Utils.Run where
 
 import qualified Sound.MIDI.File.Save as Save
-import qualified Sound.MIDI.IO as SoundIO
 import Sound.MIDI.File (T)
 
 import qualified System.IO as SIO
-import qualified System.Directory as SD
+import qualified Data.ByteString as BS
 
 import System.Process
 
@@ -38,13 +37,12 @@ toProcess (PlayMidi { midiPort = p, midiFile = f }) = shell $ concat ["aplaymidi
 
 runMidi :: Port -> T -> IO ()
 runMidi p m = do
-  SD.createDirectoryIfMissing True "tmp-midi"
-  (tmp, w) <- SIO.openBinaryTempFile "tmp-midi" "tmpXXX.midi"
-  SIO.hClose w
-  writeMidi tmp
-  createProcess (midiProc tmp)
-  return ()
-  where writeMidi f = Save.toFile f m
+  (b1,b2) <- createPipe
+  SIO.hSetBinaryMode b2 True
+  BS.hPutStr b2 midiBS
+  createProcess ((midiProc "-") { std_in=UseHandle b1 })
+  pure ()
+  where midiBS = BS.pack $ Save.toByteList m
         midiProc f = toProcess (PlayMidi p f)
 
 
