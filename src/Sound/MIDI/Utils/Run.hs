@@ -1,5 +1,5 @@
 module Sound.MIDI.Utils.Run
-  ( runMidi
+  ( playMidi
   , listAvailableUsers
   , User(userPort, userClientName, userPortName)
   ) where
@@ -39,8 +39,9 @@ toProcess :: PlayMidi -> CreateProcess
 toProcess (PlayMidi { midiPort = p, midiFile = f }) = shell $ concat ["aplaymidi", " -p ", show p, " ", f]
 
 
-runMidi :: Port -> T -> IO ()
-runMidi p m = do
+-- | Play MIDI data to the specified ALSA sequencer port.
+playMidi :: Port -> T -> IO ()
+playMidi p m = do
   (b1,b2) <- createPipe
   SIO.hSetBinaryMode b2 True
   BS.hPutStr b2 midiBS
