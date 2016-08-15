@@ -6,17 +6,17 @@ module Sound.MIDI.Utils.Run
   ) where
 
 
-import qualified Sound.MIDI.File.Save as Save
-import Sound.MIDI.File (T)
-
+import Data.Function (on)
+import System.Process
 import qualified System.IO as SIO
 import qualified Data.ByteString as BS
 
-import System.Process
-
 import qualified Text.Parsec as Ps
 import qualified Text.Parsec.Token as Ps
-import Data.Function (on)
+
+import qualified Sound.MIDI.File.Save as Save
+import qualified Sound.MIDI.File.Load as Load
+import Sound.MIDI.File (T)
 
 
 newtype Port = Port { getPort :: (Int, Int) }
